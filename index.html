@@ -22,6 +22,36 @@
             --heart-color: #e8576b;
         }
 
+.countdown-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+}
+.whatsapp-btn {
+    display: inline-block;
+    padding: 11px 20px;
+    background: rgba(37, 211, 102, 0.2);
+    border: 1px solid rgba(37, 211, 102, 0.5);
+    border-radius: 24px;
+    color: #25d366;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s;
+    letter-spacing: 0.02em;
+    font-family: 'Georgia', serif;
+    -webkit-tap-highlight-color: transparent;
+}
+.whatsapp-btn:active {
+    transform: scale(0.94);
+    background: rgba(37, 211, 102, 0.35);
+    box-shadow: 0 0 20px rgba(37, 211, 102, 0.2);
+}
+.whatsapp-btn i {
+    margin-right: 6px;
+}
+
         * {
             margin: 0;
             padding: 0;
@@ -917,36 +947,42 @@
         </div>
 
         <!-- Countdown Section -->
-        <div class="countdown-section" id="countdownSection">
-            <div class="countdown-label">
-                <i class="fa-solid fa-heart-circle-check"></i> Counting down every second until <span id="selectedDateLabel">...</span> <i class="fa-solid fa-heart-circle-check"></i>
-            </div>
-            <div class="countdown-digits">
-                <div class="countdown-block">
-                    <div class="countdown-number" id="cdDays">00</div>
-                    <div class="countdown-unit">Days</div>
-                </div>
-                <div class="countdown-block">
-                    <div class="countdown-number" id="cdHours">00</div>
-                    <div class="countdown-unit">Hours</div>
-                </div>
-                <div class="countdown-block">
-                    <div class="countdown-number" id="cdMins">00</div>
-                    <div class="countdown-unit">Mins</div>
-                </div>
-                <div class="countdown-block">
-                    <div class="countdown-number" id="cdSecs">00</div>
-                    <div class="countdown-unit">Secs</div>
-                </div>
-            </div>
-            <button class="ics-download-btn" id="downloadIcsBtn">
-                <i class="fa-solid fa-calendar-plus"></i> Add to My Calendar
-            </button>
-            <button class="reset-date-btn" id="resetDateBtn">
-                <i class="fa-solid fa-rotate-left"></i> Pick a different date
-            </button>
+
+        <!-- Countdown Section -->
+<div class="countdown-section" id="countdownSection">
+    <div class="countdown-label">
+        <i class="fa-solid fa-heart-circle-check"></i> Counting down every second until <span id="selectedDateLabel">...</span> <i class="fa-solid fa-heart-circle-check"></i>
+    </div>
+    <div class="countdown-digits">
+        <div class="countdown-block">
+            <div class="countdown-number" id="cdDays">00</div>
+            <div class="countdown-unit">Days</div>
+        </div>
+        <div class="countdown-block">
+            <div class="countdown-number" id="cdHours">00</div>
+            <div class="countdown-unit">Hours</div>
+        </div>
+        <div class="countdown-block">
+            <div class="countdown-number" id="cdMins">00</div>
+            <div class="countdown-unit">Mins</div>
+        </div>
+        <div class="countdown-block">
+            <div class="countdown-number" id="cdSecs">00</div>
+            <div class="countdown-unit">Secs</div>
         </div>
     </div>
+    <div class="countdown-buttons">
+        <button class="ics-download-btn" id="downloadIcsBtn">
+            <i class="fa-solid fa-calendar-plus"></i> Add to Calendar
+        </button>
+        <button class="reset-date-btn" id="resetDateBtn">
+            <i class="fa-solid fa-rotate-left"></i> Pick a different date
+        </button>
+        <button class="whatsapp-btn" id="whatsappBtn">
+            <i class="fa-brands fa-whatsapp"></i> Tell him I picked a date
+        </button>
+    </div>
+</div>
 
     <!-- Music Toggle -->
     <button class="music-toggle playing" id="musicToggle" aria-label="Toggle music">
@@ -1171,19 +1207,25 @@
                 });
             }
 
-            function handleDateSelect(year, month, day) {
-                const cellDate = new Date(year, month, day);
-                if (cellDate < today && !(year === 2026 && month === 7 && day === 8)) {
-                    showToast('The past is behind us. Pick a future date, love. 💕');
-                    return;
-                }
-                selectedDateObj = new Date(year, month, day, 18, 0, 0);
-                selectedDateStr = selectedDateObj.toISOString().split('T')[0];
-                localStorage.setItem('apology_selectedDate', selectedDateStr);
-                renderCalendar();
-                updateCountdownUI();
-                updatePromptUI();
-            }
+      function handleDateSelect(year, month, day) {
+    const cellDate = new Date(year, month, day);
+    if (cellDate < today && !(year === 2026 && month === 7 && day === 8)) {
+        showToast('Pick any future date, my love. 💕');
+        return;
+    }
+    selectedDateObj = new Date(year, month, day, 14, 0, 0);
+    selectedDateStr = selectedDateObj.toISOString().split('T')[0];
+    localStorage.setItem('apology_selectedDate', selectedDateStr);
+    renderCalendar();
+    updateCountdownUI();
+    updatePromptUI();
+    
+    // WhatsApp notification to you
+    const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+    const formatted = selectedDateObj.toLocaleDateString('en-US', options);
+    // const message = encodeURIComponent(`📅 ${formatted} at 2:00 PM\n\nGet ready! 💕`);
+    window.open(`https://wa.me/254733588676?text=${message}`, '_blank');
+}
 
             function resetSelectedDate() {
                 selectedDateObj = null;
@@ -1259,8 +1301,8 @@
                     'CALSCALE:GREGORIAN',
                     'METHOD:PUBLISH',
                     'BEGIN:VEVENT',
-                    `DTSTART:${dateStr}T180000`,
-                    `DTEND:${dateStr}T210000`,
+                    `DTSTART:${dateStr}T140000`,
+                    `DTEND:${dateStr}T170000`,
                     `DTSTAMP:${nowStr}`,
                     'UID:apology-datenight-' + dateStr + '@love',
                     'SUMMARY:Date 💕',
@@ -1360,6 +1402,14 @@
             downloadIcsBtn.addEventListener('click', downloadICS);
             resetDateBtn.addEventListener('click', resetSelectedDate);
 
+            // WhatsApp button
+document.getElementById('whatsappBtn').addEventListener('click', function() {
+    if (!selectedDateObj) return;
+    const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+    const formatted = selectedDateObj.toLocaleDateString('en-US', options);
+    const message = encodeURIComponent(`💕 I picked \n\n📅 ${formatted} at 2:00 PM\n\nCan't wait to see you! 💕`);
+    window.open('https://wa.me/YOURNUMBER?text=' + message, '_blank');
+});
             // ============ INIT ============
             function init() {
                 renderCalendarDayHeaders();
